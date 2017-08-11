@@ -8,3 +8,7 @@ CMUBS workflow mothur commands.docx <- mothur workflow for sequence curation
 Beta div OTU table.shared <- OTU table used for beta diversity analyses
 
 Supplementary Table X.xlsx <- Supplemental information associated with this study
+
+Alpha div.csv <- alpha diversity indices and metadata
+
+CMUBS chem data.txt <- environmental data
