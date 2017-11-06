@@ -1,5 +1,3 @@
-#attempt to use R for PC and PCA
-#first attempt has pH and [H] vaules
 setwd("C:/Users/horto/Dropbox/CMUBS Lakes/Data analysis/lake stats")
 library(permute)
 library(vegan)
@@ -102,25 +100,6 @@ names(chem.pca)
 #reset
 #rm(list=ls())
 
-####Alpha Diversity mixed-model ANOVAs testing Lake and S/B
-REU.alpha <- read.csv("REU_alpha_singletons.csv")
-
-REU.chao.lm=lm(chao~Lake, REU.alpha)
-anova(REU.chao.lm)
-REU.chao.lme=lme(fixed=chao~Habitat, random=~1|factor(Lake), data=REU.alpha)
-anova(REU.chao.lme)
-
-REU.npshannon.lm=lm(npshannon~Lake,REU.alpha)
-anova(REU.npshannon.lm)
-REU.npshannon.lme=lme(fixed=npshannon~Habitat, random=~1|factor(Lake), data=REU.alpha)
-anova(REU.npshannon.lme)
-
-### look for correlations with environmental variables
-corr_meta <- as.matrix(CMUBS_META[,c(4:8,10)])
-alphacorr <- rcorr(as.matrix(REU.alpha[,4:5]), corr_meta, type = "spearman")
-alphacorr
-#no significant correlations between alpha and environmental variables
-
 
 ############################################################
 ############################################################
@@ -217,6 +196,31 @@ summary(NMDS_lake)
 ## plot quick NMDS for comparisons
 NMDS_lake_plot <- plot_ordination(CMUBS_ALL, NMDS_lake, shape="Lake", label='Time', color = 'Habitat')
 NMDS_lake_plot + geom_point(size=1) + theme_bw()
+
+#############
+### Alpha ###
+#############
+
+rich <- plot_richness(CMUBS_ALL, measures = "shannon")
+REU.alphaphylo <- rich$data[,c(1:3,13)]
+REU.alphaphylo
+colnames(REU.alphaphylo)[4] <- "npshannon"
+
+####Alpha Diversity mixed-model ANOVAs testing Lake and S/B
+
+REU.npshannon.lm=lm(npshannon~Lake,REU.alphaphylo)
+anova(REU.npshannon.lm)
+REU.npshannon.lme=lme(fixed=npshannon~Habitat, random=~1|factor(Lake), data=REU.alphaphylo)
+anova(REU.npshannon.lme)
+
+### look for correlations with environmental variables
+corr_meta <- data.matrix(CMUBS_META[,c(4:8,10)])
+corr_meta <- cbind(corr_meta,REU.alphaphylo[,4])
+alphacorr <- rcorr(corr_meta, type = "spearman")
+alphacorr
+#no significant correlations between alpha and environmental variables
+
+
 
 ##################################################################
 ##### Publication-level NMDS figures and envfit correlations #####
